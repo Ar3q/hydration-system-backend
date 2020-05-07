@@ -6,12 +6,28 @@ import { DevicesModule } from './devices/devices.module';
 import { MeasurementsModule } from './measurements/measurements.module';
 import { RouterModule } from 'nest-router';
 import { routes } from './routes';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     RouterModule.forRoutes(routes),
-    // TODO: environmental variable for mongo url
-    MongooseModule.forRoot('mongourl'),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configSerivce: ConfigService) => {
+        const user = configSerivce.get('MONGODB_USER');
+        const password = configSerivce.get('MONGODB_PASS');
+        const host = configSerivce.get('MONGODB_HOST');
+        const port = configSerivce.get('MONGODB_PORT');
+
+        const uri = `mongodb://${user}:${password}@${host}:${port}`;
+
+        return {
+          uri,
+        };
+      },
+      inject: [ConfigService],
+    }),
     DevicesModule,
     MeasurementsModule,
   ],
