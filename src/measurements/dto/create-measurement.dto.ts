@@ -5,10 +5,10 @@ export class CreateMeasurementDto {
   @IsNumber()
   @Min(0)
   @Max(100)
-  readonly moisture: number;
+  moisture: number;
 
   @IsOptional()
   @IsNumber()
   @Min(0)
-  readonly liquidLevel: number;
+  liquidLevel: number;
 }

@@ -9,6 +9,7 @@ import {
 import { Measurement } from './interfaces/measurement.interface';
 import { MeasurementsService } from './measurements.service';
 import { CreateMeasurementDto } from './dto/create-measurement.dto';
+import { Ctx, MqttContext, Payload, EventPattern } from '@nestjs/microservices';
 
 @Controller()
 export class MeasurementsController {
@@ -25,5 +26,10 @@ export class MeasurementsController {
     @Param('deviceId') deviceName: string,
   ) {
     return this.measurementsService.create(createMeasurementDto, deviceName);
+  }
+
+  @EventPattern('device/+/+')
+  test(@Payload() data, @Ctx() context: MqttContext) {
+    this.measurementsService.createFromMQTTMessage(data, context.getTopic());
   }
 }
