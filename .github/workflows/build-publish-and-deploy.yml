@@ -1,0 +1,42 @@
+name: Build, publish to Github Packages and deploy on server
+on:
+  push:
+    branches:
+      - master
+      - workflow1
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and publish
+        uses: VaultVulp/gp-docker-action@1.1.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: ${{ secrets.IMAGE_NAME }}
+  ssh-and-pull:
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy package
+        uses: appleboy/ssh-action@master
+        env:
+          GITHUB_USERNAME: ${{ secrets.GH_USERNAME }}
+          GITHUB_USERNAME_LOWERCASE: ${{ secrets.GH_USERNAME_LOWERCASE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
+          REPO_NAME: ${{ secrets.REPO_NAME }}
+          DOCKER_NETWORK_NAME: ${{ secrets.NET_NAME }}
+          ENV_PATH: ${{ secrets.ENV_PATH }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          envs: GITHUB_USERNAME, GITHUB_USERNAME_LOWERCASE, GITHUB_TOKEN, IMAGE_NAME, REPO_NAME, DOCKER_NETWORK_NAME
+          script: |
+            docker stop $(docker ps | grep $IMAGE_NAME | awk '{print $1}') || echo "Nothing to be stoped"
+            docker login docker.pkg.github.com -u $GITHUB_USERNAME -p $GITHUB_TOKEN
+            docker pull docker.pkg.github.com/$GITHUB_USERNAME_LOWERCASE/$REPO_NAME/$IMAGE_NAME:latest
+            docker run -it -d -p 3000:3000 --network $DOCKER_NETWORK_NAME --env-file $ENV_PATH docker.pkg.github.com/$GITHUB_USERNAME_LOWERCASE/$REPO_NAME/$IMAGE_NAME:latest
