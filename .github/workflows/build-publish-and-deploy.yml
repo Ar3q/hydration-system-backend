@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          envs: GITHUB_USERNAME, GITHUB_USERNAME_LOWERCASE, GITHUB_TOKEN, IMAGE_NAME, REPO_NAME, DOCKER_NETWORK_NAME
+          envs: GITHUB_USERNAME, GITHUB_USERNAME_LOWERCASE, GITHUB_TOKEN, IMAGE_NAME, REPO_NAME, DOCKER_NETWORK_NAME, ENV_PATH
           script: |
             docker stop $(docker ps | grep $IMAGE_NAME | awk '{print $1}') || echo "Nothing to be stoped"
             docker login docker.pkg.github.com -u $GITHUB_USERNAME -p $GITHUB_TOKEN
