@@ -11,6 +11,8 @@ services:
       - MONGODB_PASS
       - MONGODB_HOST=mongo
       - MONGODB_PORT
+      - MQTT_HOST
+      - MQTT_PORT
   mongo:
     image: mongo:4.2
     restart: always
