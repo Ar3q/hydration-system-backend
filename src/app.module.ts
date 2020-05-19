@@ -25,6 +25,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           uri,
           useNewUrlParser: true,
           useUnifiedTopology: true,
+          useFindAndModify: false,
         };
       },
       inject: [ConfigService],

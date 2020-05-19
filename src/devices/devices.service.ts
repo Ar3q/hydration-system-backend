@@ -62,16 +62,30 @@ export class DevicesService {
       console.error(error);
     }
 
+    if (!numberOfDeletedRows) {
+      throw new NotFoundException(
+        `Device with id/name: ${deviceId} not found, so not deleted`,
+      );
+    }
+
     return { numberOfDeletedRows };
   }
 
-  update(deviceId: string, updateDeviceDto: UpdateDeviceDto) {
-    return this.deviceModel.findByIdAndUpdate(
+  async update(deviceId: string, updateDeviceDto: UpdateDeviceDto) {
+    const updatedDevice = await this.deviceModel.findByIdAndUpdate(
       deviceId,
       {
         ...updateDeviceDto,
       },
       { new: true },
     );
+
+    if (!updatedDevice) {
+      throw new NotFoundException(
+        `Device with id/name: ${deviceId} not found, so not updated`,
+      );
+    }
+
+    return updatedDevice;
   }
 }

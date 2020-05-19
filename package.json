@@ -27,6 +27,7 @@
     "@nestjs/microservices": "^7.0.9",
     "@nestjs/mongoose": "^6.4.0",
     "@nestjs/platform-express": "^7.0.0",
+    "@nestjs/swagger": "^4.5.7",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.12.2",
     "mongoose": "^5.9.12",
@@ -34,7 +35,8 @@
     "nest-router": "^1.0.9",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.5.4"
+    "rxjs": "^6.5.4",
+    "swagger-ui-express": "^4.1.4"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.0.0",

@@ -69,6 +69,12 @@ export class MeasurementsService {
       console.error(error);
     }
 
+    if (!numberOfDeletedRows) {
+      throw new NotFoundException(
+        `Measurement with id: ${measurementId} for device: ${deviceName} not found, so not deleted`,
+      );
+    }
+
     return { numberOfDeletedRows };
   }
 
