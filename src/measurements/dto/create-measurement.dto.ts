@@ -1,14 +1,13 @@
-import { IsNumber, Min, Max, IsOptional } from 'class-validator';
+import { IsNumber, Min, Max, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateMeasurementDto {
   @IsOptional()
   @IsNumber()
   @Min(0)
-  @Max(100)
+  @Max(4095)
   moisture: number;
 
   @IsOptional()
-  @IsNumber()
-  @Min(0)
-  liquidLevel: number;
+  @IsBoolean()
+  liquidLevel: boolean;
 }

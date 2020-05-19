@@ -50,7 +50,7 @@ export class MeasurementsService {
         createMeasurementDto.moisture = Number(data);
         break;
       case 'liquid_level':
-        createMeasurementDto.liquidLevel = Number(data);
+        createMeasurementDto.liquidLevel = Boolean(data);
         break;
       default:
         console.error(`Unknown type of measurement: ${typeOfMeasurement}`);

@@ -1,8 +1,8 @@
 import * as mongoose from 'mongoose';
 
 export const MeasurementSchema = new mongoose.Schema({
-  liquidLevel: { type: Number },
-  moisture: { type: Number, min: 0, max: 100 },
+  liquidLevel: { type: Boolean },
+  moisture: { type: Number, min: 0, max: 4095 },
   device: { type: 'String', ref: 'Device' },
   date: {
     type: Date,

@@ -28,7 +28,7 @@ export class MeasurementsController {
     return this.measurementsService.create(createMeasurementDto, deviceName);
   }
 
-  @EventPattern('device/+/+')
+  @EventPattern('devices/+/+')
   test(@Payload() data, @Ctx() context: MqttContext) {
     this.measurementsService.createFromMQTTMessage(data, context.getTopic());
   }
