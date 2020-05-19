@@ -5,6 +5,7 @@ import {
   Body,
   ValidationPipe,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { Measurement } from './interfaces/measurement.interface';
 import { MeasurementsService } from './measurements.service';
@@ -26,6 +27,22 @@ export class MeasurementsController {
     @Param('deviceId') deviceName: string,
   ) {
     return this.measurementsService.create(createMeasurementDto, deviceName);
+  }
+
+  @Get('/:measurementId')
+  async findById(
+    @Param('deviceId') deviceName: string,
+    @Param('measurementId') measurementId: string,
+  ) {
+    return this.measurementsService.findById(deviceName, measurementId);
+  }
+
+  @Delete('/:measurementId')
+  async delete(
+    @Param('deviceId') deviceName: string,
+    @Param('measurementId') measurementId: string,
+  ) {
+    return this.measurementsService.delete(deviceName, measurementId);
   }
 
   @EventPattern('devices/+/+')

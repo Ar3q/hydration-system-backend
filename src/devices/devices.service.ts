@@ -1,9 +1,14 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Device } from './interfaces/device.interface';
 import { CreateDeviceDto } from './dto/create-device.dto';
 import { IdDuplicatCode } from 'src/constants/mongo-error-codes';
+import { UpdateDeviceDto } from './dto/update-device.dto';
 
 @Injectable()
 export class DevicesService {
@@ -36,10 +41,37 @@ export class DevicesService {
   }
 
   async findById(id: string): Promise<Device> {
-    return await this.deviceModel.findById(id).exec();
+    const foundDevice = await this.deviceModel.findById(id).exec();
+    if (!foundDevice) {
+      throw new NotFoundException(`Device with id/name: ${id} not found`);
+    }
+    return foundDevice;
   }
 
-  async findAll(): Promise<Device[]> {
-    return await this.deviceModel.find().exec();
+  findAll(): Promise<Device[]> {
+    return this.deviceModel.find().exec();
+  }
+
+  async delete(deviceId: string): Promise<{ numberOfDeletedRows: number }> {
+    let numberOfDeletedRows;
+    try {
+      numberOfDeletedRows = (
+        await this.deviceModel.deleteOne({ _id: deviceId })
+      ).deletedCount;
+    } catch (error) {
+      console.error(error);
+    }
+
+    return { numberOfDeletedRows };
+  }
+
+  update(deviceId: string, updateDeviceDto: UpdateDeviceDto) {
+    return this.deviceModel.findByIdAndUpdate(
+      deviceId,
+      {
+        ...updateDeviceDto,
+      },
+      { new: true },
+    );
   }
 }

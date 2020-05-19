@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Measurement } from './interfaces/measurement.interface';
 import { Model } from 'mongoose';
@@ -34,6 +34,42 @@ export class MeasurementsService {
 
   async findAll(deviceName: string): Promise<Measurement[]> {
     return this.measurementModel.find({ device: deviceName }).exec();
+  }
+
+  async findById(
+    deviceName: string,
+    measurementId: string,
+  ): Promise<Measurement> {
+    const found = await this.measurementModel.findOne({
+      _id: measurementId,
+      device: deviceName,
+    });
+
+    if (!found) {
+      throw new NotFoundException(
+        `Measurement with id: ${measurementId} for device: ${deviceName} not found`,
+      );
+    }
+
+    return found;
+  }
+
+  async delete(
+    deviceName: string,
+    measurementId: string,
+  ): Promise<{ numberOfDeletedRows: number }> {
+    let numberOfDeletedRows;
+    try {
+      numberOfDeletedRows = await this.measurementModel.deleteOne({
+        _id: measurementId,
+        device: deviceName,
+      });
+      numberOfDeletedRows = numberOfDeletedRows.deletedCount;
+    } catch (error) {
+      console.error(error);
+    }
+
+    return { numberOfDeletedRows };
   }
 
   async createFromMQTTMessage(
