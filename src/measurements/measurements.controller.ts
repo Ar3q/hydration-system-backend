@@ -6,6 +6,7 @@ import {
   ValidationPipe,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { Measurement } from './interfaces/measurement.interface';
 import { MeasurementsService } from './measurements.service';
@@ -16,7 +17,10 @@ import {
   ApiParam,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
 } from '@nestjs/swagger';
+import { DateRangeDto } from './dto/date-range.dto';
+import { ParseDatePipe } from 'src/common/pipes/ParseDate.pipe';
 
 @ApiTags('measurements')
 @Controller()
@@ -28,9 +32,26 @@ export class MeasurementsController {
     example: 'pomps_device',
     description: 'Device _id (which is also its name)',
   })
+  @ApiQuery({
+    name: 'startDate',
+    description:
+      'Allow to get measurements that was created after passed date. Format: ISO_8601',
+    example: '2020-05-19',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'endDate',
+    description:
+      'Allow to get measurements that was created before passed date. Format: ISO_8601',
+    example: '2020-05-20T06:53:26.292Z',
+    required: false,
+  })
   @Get()
-  async findAll(@Param('deviceId') deviceName: string): Promise<Measurement[]> {
-    return this.measurementsService.findAll(deviceName);
+  async findAll(
+    @Param('deviceId') deviceName: string,
+    @Query(ValidationPipe, ParseDatePipe) dateRangeDto: DateRangeDto,
+  ): Promise<Measurement[]> {
+    return this.measurementsService.findAll(deviceName, dateRangeDto);
   }
 
   @ApiParam({

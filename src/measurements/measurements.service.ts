@@ -4,6 +4,7 @@ import { Measurement } from './interfaces/measurement.interface';
 import { Model } from 'mongoose';
 import { CreateMeasurementDto } from './dto/create-measurement.dto';
 import { validateOrReject } from 'class-validator';
+import { DateRangeDto } from './dto/date-range.dto';
 
 @Injectable()
 export class MeasurementsService {
@@ -32,8 +33,27 @@ export class MeasurementsService {
     return savedMeasurement;
   }
 
-  async findAll(deviceName: string): Promise<Measurement[]> {
-    return this.measurementModel.find({ device: deviceName }).exec();
+  findAll(
+    deviceName: string,
+    dateRangeDto: DateRangeDto,
+  ): Promise<Measurement[]> {
+    const query = this.measurementModel.find({
+      device: deviceName,
+    });
+
+    if (dateRangeDto.startDate) {
+      query.find({
+        date: { $gte: dateRangeDto.startDate },
+      });
+    }
+
+    if (dateRangeDto.endDate) {
+      query.find({
+        date: { $lt: dateRangeDto.endDate },
+      });
+    }
+
+    return query.exec();
   }
 
   async findById(
